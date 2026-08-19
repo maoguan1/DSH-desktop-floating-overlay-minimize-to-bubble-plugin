@@ -1,0 +1,1 @@
+# DSH-desktop-floating-overlay-minimize-to-bubble-plugin

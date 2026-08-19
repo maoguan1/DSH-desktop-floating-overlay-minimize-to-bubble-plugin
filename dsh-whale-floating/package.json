@@ -1,0 +1,47 @@
+{
+  "name": "dsh-whale-floating",
+  "version": "1.0.0",
+  "description": "DeepSeek Harness 桌面鲸鱼悬浮窗插件：最小化后蹲一只透明鲸鱼娘在桌面上，可拖动、可贴边收缩成小鲸鱼，并通过 dsh 设置页管理配置。",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "whale",
+    "floating-window",
+    "tray"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./src/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ],
+      "platform": "web"
+    }
+  },
+  "files": [
+    "src",
+    "desktop",
+    "scripts",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "check": "node scripts/verify.js",
+    "patch:desktop": "node scripts/apply-desktop-patch.js",
+    "git:init": "git init -b main"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-client-runtime": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-settings": "^0.1.0-rc.6"
+  },
+  "devDependencies": {}
+}

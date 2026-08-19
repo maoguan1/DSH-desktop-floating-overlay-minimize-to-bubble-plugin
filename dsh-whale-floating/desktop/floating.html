@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: transparent;
+    overflow: hidden;
+    user-select: none;
+    cursor: grab;
+  }
+  body.dragging { cursor: grabbing; }
+  .whale {
+    position: fixed;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-user-drag: none;   /* 禁止把图片拖出去复制 */
+    cursor: grab;
+    background: transparent;   /* 真透明，直接透出桌面 */
+    object-fit: contain;
+    transition: transform .22s ease, filter .22s ease;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,.30));
+    pointer-events: auto;
+  }
+  body.dragging .whale { cursor: grabbing; }
+  /* 正常模式：鲸鱼娘大图，悬停放大 */
+  .whale-main {
+    width: 128px; height: 128px;
+  }
+  .whale-main:hover {
+    transform: translate(-50%, -50%) scale(1.10);
+    filter: drop-shadow(0 8px 22px rgba(0,0,0,.42));
+  }
+  /* 贴边模式：小鲸鱼图标，悬停放大 */
+  .whale-dock {
+    width: 44px; height: 44px;
+    display: none;
+  }
+  .whale-dock:hover {
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+  body.docked .whale-main { display: none; }
+  body.docked .whale-dock { display: block; }
+</style>
+</head>
+<body>
+  <!-- 主图：鲸鱼娘 -->
+  <img class="whale whale-main" src="./assets/whale-girl.png" draggable="false"
+       title="DeepSeek 鲸鱼娘 — 单击回到桌面端" alt="" />
+  <!-- 贴边图标：官方小鲸鱼 -->
+  <img class="whale whale-dock" src="./assets/whale-dock.png" draggable="false"
+       title="DeepSeek — 单击回到桌面端" alt="" />
+  <script>
+    (function () {
+      var floating = window.floating;
+      var dragging = false;
+      var dragged = false;
+      var downX = 0, downY = 0;
+      var MOVE_THRESHOLD = 4;
+
+      // 禁止任何图片拖拽源行为（双保险，防止拖到桌面复制图片）
+      document.addEventListener('dragstart', function (e) { e.preventDefault(); return false; });
+
+      document.addEventListener('mousedown', function (e) {
+        if (e.button !== 0) return;
+        dragging = true;
+        dragged = false;
+        downX = e.screenX; downY = e.screenY;
+        document.body.classList.add('dragging');
+        if (floating && floating.dragStart) floating.dragStart(downX, downY);
+      });
+
+      document.addEventListener('mousemove', function (e) {
+        if (!dragging) return;
+        // 用屏幕绝对坐标判断是否真的拖动了（窗口跟随鼠标，相对坐标不会变）
+        if (!dragged && Math.abs(e.screenX - downX) + Math.abs(e.screenY - downY) > MOVE_THRESHOLD) {
+          dragged = true;
+        }
+        if (floating && floating.dragMove) floating.dragMove(e.screenX, e.screenY);
+      });
+
+      document.addEventListener('mouseup', function (e) {
+        if (e.button !== 0 || !dragging) return;
+        dragging = false;
+        document.body.classList.remove('dragging');
+        if (floating && floating.dragEnd) floating.dragEnd();
+        // 没拖动才是"单击"→ 恢复主窗口
+        if (!dragged && floating && floating.restore) floating.restore();
+      });
+
+      // 悬停上报（贴边时展开/收回）
+      function sendHover(v) {
+        if (floating && floating.hover) floating.hover(v);
+      }
+      document.body.addEventListener('mouseenter', function () { sendHover(true); });
+      document.body.addEventListener('mouseleave', function () { sendHover(false); });
+
+      // 主进程切换贴边/展开形态
+      if (floating && floating.onDock) {
+        floating.onDock(function (v) {
+          document.body.classList.toggle('docked', !!v);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

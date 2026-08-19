@@ -1,0 +1,11 @@
+# ~/.dsh/settings.yaml 示例片段 —— 复制这段到你的 settings.yaml 即可
+whale-floating:
+  enabled: true            # 是否启用悬浮窗（桌面补丁生效时才有意义）
+  image: whale-girl.png    # 悬浮窗主图（desktop/assets/ 或 dsh-desktop/src/assets/ 下）
+  dockImage: whale-dock.png # 贴边小图标（官方透明鲸鱼）
+  size: 148                # 悬浮窗边长 px
+  dockSize: 60             # 贴边后边长 px
+  opacity: 1.0             # 透明度 0.3 ~ 1.0
+  dockOnEdge: true         # 是否启用贴边收缩
+  dockGap: 10              # 触发贴边的边缘距离 px
+  position: bottom-right   # 首次出现位置：bottom-right | bottom-left | top-right | top-left
